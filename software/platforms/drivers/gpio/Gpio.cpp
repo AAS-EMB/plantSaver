@@ -3,7 +3,7 @@
 namespace drv {
 
 [[nodiscard]] bool Gpio::init(GPIO_TypeDef *port, uint32_t pin, uint32_t mode,
-                              uint32_t pull, uint32_t speed) {
+                              uint32_t pull, uint32_t speed) noexcept {
     if(port == nullptr)
         return false;
     if(!rccEnable(port))
@@ -15,17 +15,17 @@ namespace drv {
     return true;
 }
 
-void Gpio::setPinAsInput() {
+void Gpio::setPinAsInput() noexcept {
     _cfg.Mode = GPIO_MODE_INPUT;
     HAL_GPIO_Init(_port, &_cfg);
 }
 
-void Gpio::setPinAsOutput() {
+void Gpio::setPinAsOutput() noexcept {
     _cfg.Mode = GPIO_MODE_OUTPUT_PP;
     HAL_GPIO_Init(_port, &_cfg);
 }
 
-void Gpio::setPinState(GpioState state) {
+void Gpio::setPinState(GpioState state) noexcept {
     if (state == GpioState::High) {
         _port->BSRR = _cfg.Pin;
     } else {
@@ -33,16 +33,16 @@ void Gpio::setPinState(GpioState state) {
     }
 }
 
-void Gpio::togglePin() {
-    uint32_t prevState = _port->ODR;
+void Gpio::togglePin() noexcept {
+    auto prevState{_port->ODR};
     _port->BSRR = ((prevState & _cfg.Pin) << _maxGpioPinsOnPort) | (~prevState & _cfg.Pin);
 }
 
-[[nodiscard]] bool Gpio::readPinState() const {
+[[nodiscard]] bool Gpio::readPinState() const noexcept {
     return GpioState{ _port->IDR & _cfg.Pin} == GpioState::High;
 }
 
-[[nodiscard]] bool Gpio::rccEnable(const GPIO_TypeDef *port) {
+[[nodiscard]] bool Gpio::rccEnable(const GPIO_TypeDef *port) const noexcept {
     if(port == GPIOA) { __HAL_RCC_GPIOA_CLK_ENABLE(); return true; }
     if(port == GPIOB) { __HAL_RCC_GPIOB_CLK_ENABLE(); return true; }
     if(port == GPIOC) { __HAL_RCC_GPIOC_CLK_ENABLE(); return true; }

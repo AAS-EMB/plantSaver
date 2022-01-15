@@ -12,18 +12,18 @@ public:
         High
     };
     [[nodiscard]] bool init(GPIO_TypeDef *port, uint32_t pin, uint32_t mode,
-                            uint32_t pull, uint32_t speed);
-    void setPinAsInput();
-    void setPinAsOutput();
-    void setPinState(GpioState state);
-    void togglePin();
-    [[nodiscard]] bool readPinState() const;
+                            uint32_t pull, uint32_t speed) noexcept;
+    void setPinAsInput() noexcept;
+    void setPinAsOutput() noexcept;
+    void setPinState(GpioState state) noexcept;
+    void togglePin() noexcept;
+    [[nodiscard]] bool readPinState() const noexcept;
 
 private:
-    static constexpr uint8_t _maxGpioPinsOnPort = 16;
-    [[nodiscard]] bool rccEnable(const GPIO_TypeDef *port);
-    GPIO_TypeDef *_port;
-    GPIO_InitTypeDef _cfg;
+    static constexpr uint8_t _maxGpioPinsOnPort{16};
+    [[nodiscard]] bool rccEnable(const GPIO_TypeDef *port) const noexcept;
+    GPIO_TypeDef *_port{nullptr};
+    GPIO_InitTypeDef _cfg{};
 };
 
 }
