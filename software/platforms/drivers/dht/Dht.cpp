@@ -2,7 +2,7 @@
 
 namespace drv {
 
-[[nodiscard]] bool Dht::init(GPIO_TypeDef *port, uint32_t pin) noexcept {
+[[nodiscard]] bool Dht::init(GPIO_TypeDef *const port, const uint32_t pin) noexcept {
     return _gpio.init(port, pin, GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_MEDIUM);
 }
 
@@ -12,17 +12,17 @@ void Dht::poll() noexcept {
     delay(10);
     _gpio.setPinState(Gpio::GpioState::High);
     _gpio.setPinAsInput();
-    uint16_t timeout{0};
+    uint16_t cnt{0};
     while(_gpio.readPinState()) {
-        if(++timeout > _cMaxTimeout) return;
+        if(++cnt > _cMaxTimeout) return;
     }
-    timeout = 0;
+    cnt = 0;
     while(!_gpio.readPinState()) {
-        if(++timeout > _cMaxTimeout) return;
+        if(++cnt > _cMaxTimeout) return;
     }
-    timeout = 0;
+    cnt = 0;
     while(_gpio.readPinState()) {
-        if(++timeout > _cMaxTimeout) return;
+        if(++cnt > _cMaxTimeout) return;
     }
     uint8_t raw[5]{0};
     for(uint8_t i{0}; i < sizeof(raw); ++i) {
@@ -39,6 +39,7 @@ void Dht::poll() noexcept {
         case DHT::_11:
             _hum  = static_cast<float>(raw[0]);
             _temp = static_cast<float>(raw[2]);
+        case DHT::_21:
         case DHT::_22:
             _hum  = 0.1f * static_cast<float>(static_cast<uint16_t>(((raw[0] << 8) & 0xFF00) | raw[1]));
             _temp = 0.1f * static_cast<float>(static_cast<uint16_t>(((raw[2] << 8) & 0xFF00) | raw[3]));
