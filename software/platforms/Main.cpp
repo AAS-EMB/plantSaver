@@ -3,7 +3,6 @@
 #include "usart.h"
 
 #include <gpio/Gpio.h>
-#include <adcTemp/AdcTemp.h>
 #include <oneWire/OneWire.h>
 #include <ds18b20/Ds18b20.h>
 #include <dht/Dht.h>
@@ -13,19 +12,16 @@
 void SystemClock_Config(void);
 
 drv::Gpio led {};
-drv::AdcTemp boardTemp { 0.170330668605f, 357.558139535f }; // k = Vref / (4096 * avgSlope) b = 25 + V25 / avgSlope
 drv::OneWire ow {};
 drv::Ds18b20 tempSens {};
 drv::Dht dht{drv::Dht::DHT::_22};
-float temperature = 0.0f;
 
 int main(void) {
-  bool res = true;
+  auto res{true};
   HAL_Init();
   SystemClock_Config();
   MX_USART1_UART_Init();
   res &= led.init(LED_GPIO_Port, LED_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW);
-  // res &= boardTemp.init(ADC1);
   res &= dht.init(GPIOB, GPIO_PIN_0);
   // res &= ow.init(GPIOB, GPIO_PIN_0);
   // res &= tempSens.init(&ow);
@@ -95,23 +91,6 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 extern "C" {
-void ADC1_2_IRQHandler(void)
-{
-  /* USER CODE BEGIN ADC1_2_IRQn 0 */
-
-  /* USER CODE END ADC1_2_IRQn 0 */
-  HAL_ADC_IRQHandler(&boardTemp.handle());
-  /* USER CODE BEGIN ADC1_2_IRQn 1 */
-
-  /* USER CODE END ADC1_2_IRQn 1 */
-}
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-  if(hadc == &boardTemp.handle()) {
-    boardTemp.irq();
-  }
-}
 
 }
 /* USER CODE END 4 */

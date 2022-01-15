@@ -60,7 +60,6 @@ Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c
 # C sources
 CXX_SOURCES =  \
 platforms/drivers/gpio/Gpio.cpp \
-platforms/drivers/adcTemp/AdcTemp.cpp \
 platforms/drivers/oneWire/OneWire.cpp \
 platforms/drivers/ds18b20/Ds18b20.cpp \
 platforms/drivers/dht/Dht.cpp \
