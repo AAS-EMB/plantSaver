@@ -63,7 +63,8 @@ platforms/drivers/gpio/Gpio.cpp \
 platforms/drivers/adcTemp/AdcTemp.cpp \
 platforms/drivers/oneWire/OneWire.cpp \
 platforms/drivers/ds18b20/Ds18b20.cpp \
-platforms/main.cpp
+platforms/drivers/dht/Dht.cpp \
+platforms/Main.cpp
 
 # ASM sources
 ASM_SOURCES =  \
