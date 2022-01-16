@@ -4,43 +4,41 @@
 #include <oneWire/OneWire.h>
 #include <ds18b20/Ds18b20.h>
 #include <dht/Dht.h>
+#include <adc/Adc.h>
 #include <cstring>
 #include <cstdio>
 
 void SystemClock_Config(void);
 static void Error_Handler(void);
 
-drv::Gpio led {};
-drv::OneWire ow {};
-drv::Ds18b20 tempSens {};
+drv::Gpio led{};
+drv::OneWire ow{};
+drv::Ds18b20 tempSens{};
 drv::Dht dht{drv::Dht::DHT::_22};
+drv::Gpio adcGpio{};
+drv::Adc adc{0.0008056640625f, 0.0f};
 
 int main(void) {
   auto res{true};
   HAL_Init();
   SystemClock_Config();
   res &= led.init(GPIOC, GPIO_PIN_13, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW);
+  res &= adcGpio.init(GPIOA, GPIO_PIN_0, GPIO_MODE_ANALOG);
   res &= dht.init(GPIOB, GPIO_PIN_0);
-  // res &= ow.init(GPIOB, GPIO_PIN_0);
-  // res &= tempSens.init(&ow);
-  // tempSens.startAll();
+  res &= adc.init(ADC1, ADC_CHANNEL_0, ADC_REGULAR_RANK_1, ADC_SAMPLETIME_239CYCLES_5);
 
   while (true) {
     led.togglePin();
     dht.poll();
     auto t{dht.getTemp()};
     auto h{dht.getHum()};
+    auto hGround{adc.getVal()};
+    auto hGroundPercent{adc.map(hGround, 3.1f, 0.85f, 0.0f, 100.0f)};
     HAL_Delay(1000);
-    // if(tempSens.allDone()) {
-    //   tempSens.read(temperature);
-    //   auto *ptr1 = reinterpret_cast<uint8_t*>(&temperature);
-    //   HAL_UART_Transmit(&huart1, ptr1, sizeof(ptr1), 1000);
-    //   HAL_Delay(100);
-    //   tempSens.startAll();
-    // }
   }
   /* USER CODE END 3 */
 }
+
 
 /**
   * @brief System Clock Configuration
@@ -95,15 +93,15 @@ void ADC1_2_IRQHandler(void)
   /* USER CODE BEGIN ADC1_2_IRQn 0 */
 
   /* USER CODE END ADC1_2_IRQn 0 */
-  HAL_ADC_IRQHandler(&boardTemp.handle());
+  HAL_ADC_IRQHandler(&adc.getHandle());
   /* USER CODE BEGIN ADC1_2_IRQn 1 */
 
   /* USER CODE END ADC1_2_IRQn 1 */
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-  if(hadc == &boardTemp.handle()) {
-    boardTemp.irq();
+  if(hadc == &adc.getHandle()) {
+    adc.irq();
   }
 }
 
