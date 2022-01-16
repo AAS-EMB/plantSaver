@@ -21,6 +21,7 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F1xx_IT_H
 #define __STM32F1xx_IT_H
+#include "stm32f1xx.h"
 
 #ifdef __cplusplus
  extern "C" {

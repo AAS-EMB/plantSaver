@@ -1,6 +1,4 @@
 /* USER CODE BEGIN Header */
-#include "main.h"
-#include "usart.h"
 
 #include <gpio/Gpio.h>
 #include <oneWire/OneWire.h>
@@ -10,6 +8,7 @@
 #include <cstdio>
 
 void SystemClock_Config(void);
+static void Error_Handler(void);
 
 drv::Gpio led {};
 drv::OneWire ow {};
@@ -20,8 +19,7 @@ int main(void) {
   auto res{true};
   HAL_Init();
   SystemClock_Config();
-  MX_USART1_UART_Init();
-  res &= led.init(LED_GPIO_Port, LED_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW);
+  res &= led.init(GPIOC, GPIO_PIN_13, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW);
   res &= dht.init(GPIOB, GPIO_PIN_0);
   // res &= ow.init(GPIOB, GPIO_PIN_0);
   // res &= tempSens.init(&ow);
@@ -92,6 +90,23 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 extern "C" {
 
+void ADC1_2_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC1_2_IRQn 0 */
+
+  /* USER CODE END ADC1_2_IRQn 0 */
+  HAL_ADC_IRQHandler(&boardTemp.handle());
+  /* USER CODE BEGIN ADC1_2_IRQn 1 */
+
+  /* USER CODE END ADC1_2_IRQn 1 */
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+  if(hadc == &boardTemp.handle()) {
+    boardTemp.irq();
+  }
+}
+
 }
 /* USER CODE END 4 */
 
@@ -99,7 +114,7 @@ extern "C" {
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-void Error_Handler(void)
+static void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
