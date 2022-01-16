@@ -39,6 +39,7 @@ void Dht::poll() noexcept {
         case DHT::_11:
             _hum  = static_cast<float>(raw[0]);
             _temp = static_cast<float>(raw[2]);
+            break;
         case DHT::_21:
         case DHT::_22:
             _hum  = 0.1f * static_cast<float>(static_cast<uint16_t>(((raw[0] << 8) & 0xFF00) | raw[1]));
@@ -47,6 +48,7 @@ void Dht::poll() noexcept {
                 raw[2] &= 0b0111'1111;
                 _temp = -0.1f * static_cast<float>(static_cast<uint16_t>(((raw[2] << 8) & 0xFF00) | raw[3]));
             }
+            break;
     }
 }
 
