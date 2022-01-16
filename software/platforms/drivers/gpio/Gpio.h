@@ -12,7 +12,7 @@ public:
         High
     };
     [[nodiscard]] bool init(GPIO_TypeDef *const port, const uint32_t pin, const uint32_t mode,
-                            const uint32_t pull, const uint32_t speed) noexcept;
+                            const uint32_t pull = GPIO_NOPULL, const uint32_t speed = GPIO_SPEED_FREQ_MEDIUM) noexcept;
     void setPinAsInput() noexcept;
     void setPinAsOutput() noexcept;
     void setPinState(const GpioState state) noexcept;

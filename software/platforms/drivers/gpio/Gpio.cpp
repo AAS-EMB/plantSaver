@@ -8,7 +8,7 @@ namespace drv {
         return false;
     if(!rccEnable(port))
         return false;
-    GPIO_InitTypeDef cfg { pin, mode, pull, speed };
+    GPIO_InitTypeDef cfg{pin, mode, pull, speed};
     HAL_GPIO_Init(port, &cfg);
     _port = port;
     _cfg  = cfg;
@@ -39,7 +39,7 @@ void Gpio::togglePin() noexcept {
 }
 
 [[nodiscard]] bool Gpio::readPinState() const noexcept {
-    return GpioState{ _port->IDR & _cfg.Pin} == GpioState::High;
+    return GpioState{_port->IDR & _cfg.Pin} == GpioState::High;
 }
 
 [[nodiscard]] bool Gpio::rccEnable(const GPIO_TypeDef *const port) const noexcept {
